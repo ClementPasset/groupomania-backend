@@ -8,11 +8,11 @@ module.exports = (sequelize) => {
             autoIncrement: true,
             allowNull: false
         },
-        first_name: {
+        firstName: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        last_name: {
+        lastName: {
             type: DataTypes.STRING,
             allowNull: false
         },
@@ -25,7 +25,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        is_admin: {
+        isAdmin: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: 0

@@ -7,4 +7,12 @@ require('dotenv').config();
 
 const app = express();
 
+const userRoutes = require('./routes/user');
+
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
+
+app.use('/api/user/', userRoutes);
+
 module.exports = app;
