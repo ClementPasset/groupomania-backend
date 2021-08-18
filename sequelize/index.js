@@ -22,6 +22,25 @@ Comment.belongsTo(Post);
 User.hasMany(Comment);
 Comment.belongsTo(User);
 
-sequelize.sync({ force: true });
+if (process.env.NODE_ENV === 'dev') {
+    sequelize.sync({ force: true })
+        .then(() => {
+            User.create({
+                firstName: "Clément",
+                lastName: "PASSET",
+                mail: "SsUF70KFqa5NsUBAZcnldxKFuKtCqHvZUz0mBEudNsw=",
+                password: "$2b$10$Kh/SFP4nozx3jCTsAaqvfuRg6Lkh2KbKqEmuLLPHbEEXJs2W3J.pq",
+                isAdmin: true
+            })
+                .then(user => console.log(`L'utilisateur ${user.dataValues.firstName} ${user.dataValues.lastName} a bien été créé.`))
+                .catch(err => console.log(err))
+        })
+        .catch(err => console.log(err))
+}
+
+/**
+ * SsUF70KFqa5NsUBAZcnldxKFuKtCqHvZUz0mBEudNsw=
+ * $2b$10$Kh/SFP4nozx3jCTsAaqvfuRg6Lkh2KbKqEmuLLPHbEEXJs2W3J.pq
+ */
 
 module.exports = sequelize;

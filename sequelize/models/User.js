@@ -16,14 +16,14 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        email: {
+        mail: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
         },
         isAdmin: {
             type: DataTypes.BOOLEAN,
