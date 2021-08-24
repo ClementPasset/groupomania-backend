@@ -28,8 +28,12 @@ exports.signup = (req, res, next) => {
                 User.create({ firstName, lastName, mail, password })
                     .then((user) => {
                         user = user.dataValues;
+                        let expirationDate = new Date();
+                        expirationDate.setDate(expirationDate.getDate() + 1);
                         res.status(201).json({
                             userId: user.id,
+                            expirationDate: expirationDate,
+                            isAdmin: user.isAdmin,
                             token: 'Bearer ' + jwt.sign(
                                 { userId: user.id },
                                 process.env.JWT_KEY,
@@ -66,8 +70,12 @@ exports.signin = (req, res, next) => {
                         process.env.JWT_KEY,
                         { expiresIn: '24h' }
                     ))
+                    let expirationDate = new Date();
+                    expirationDate.setDate(expirationDate.getDate() + 1);
                     res.status(200).json({
                         userId: user.id,
+                        expirationDate: expirationDate,
+                        isAdmin: user.isAdmin,
                         token: 'Bearer ' + jwt.sign(
                             { userId: user.id },
                             process.env.JWT_KEY,
@@ -88,8 +96,6 @@ exports.delete = async (req, res, next) => {
     let initiatorIsAdmin = await User.findOne({ where: { id: initiatorId } })
         .then(initiator => initiator.isAdmin)
         .catch(error => res.status(500).json({ error }));
-
-    console.log('Admin : ' + initiatorIsAdmin)
 
     if (initiatorIsAdmin || initiatorId === idToDelete) {
         User.findOne({

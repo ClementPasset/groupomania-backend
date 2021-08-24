@@ -38,9 +38,4 @@ if (process.env.NODE_ENV === 'dev') {
         .catch(err => console.log(err))
 }
 
-/**
- * SsUF70KFqa5NsUBAZcnldxKFuKtCqHvZUz0mBEudNsw=
- * $2b$10$Kh/SFP4nozx3jCTsAaqvfuRg6Lkh2KbKqEmuLLPHbEEXJs2W3J.pq
- */
-
 module.exports = sequelize;
