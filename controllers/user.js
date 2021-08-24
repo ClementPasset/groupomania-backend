@@ -59,8 +59,13 @@ exports.signin = (req, res, next) => {
             bcrypt.compare(password, user.password)
                 .then(valid => {
                     if (!valid) {
-                        return res.status(401).json({ message: "Erreur d'authentification." });
+                        return res.status(401).json({ message: "Authentication error" });
                     }
+                    console.log('Bearer ' + jwt.sign(
+                        { userId: user.id },
+                        process.env.JWT_KEY,
+                        { expiresIn: '24h' }
+                    ))
                     res.status(200).json({
                         userId: user.id,
                         token: 'Bearer ' + jwt.sign(
@@ -73,4 +78,38 @@ exports.signin = (req, res, next) => {
                 .catch(error => res.status(401).json({ error }));
         })
         .catch(error => res.status(401).json({ error }))
+}
+
+exports.delete = async (req, res, next) => {
+
+    const initiatorId = req.body.userId;
+    const idToDelete = req.params.id;
+
+    let initiatorIsAdmin = await User.findOne({ where: { id: initiatorId } })
+        .then(initiator => initiator.isAdmin)
+        .catch(error => res.status(500).json({ error }));
+
+    console.log('Admin : ' + initiatorIsAdmin)
+
+    if (initiatorIsAdmin || initiatorId === idToDelete) {
+        User.findOne({
+            where: { id: idToDelete }
+        })
+            .then(user => {
+                user.destroy()
+                    .then(() => res.status(200).json({ message: "The user has been deleted." }))
+                    .catch(error => res.status(500).json({ error }));
+            })
+            .catch(error => res.status(500).json({ error }));
+    } else {
+        res.status(500).json({ message: "The use has not been deleted." })
+    }
+};
+
+exports.getAll = (req, res, next) => {
+    User.findAll({
+        attributes: ['id', 'firstName', 'lastName', 'isAdmin']
+    })
+        .then(data => res.status(200).json({ data }))
+        .catch(error => res.status(500).json({ error }));
 }
