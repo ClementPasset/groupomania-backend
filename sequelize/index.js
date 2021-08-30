@@ -33,7 +33,26 @@ if (process.env.NODE_ENV === 'dev') {
                 isAdmin: true
             })
                 .then(user => console.log(`L'utilisateur ${user.dataValues.firstName} ${user.dataValues.lastName} a bien été créé.`))
-                .catch(err => console.log(err))
+                .catch(err => console.log(err));
+
+            setTimeout(() => {
+                Post.create({
+                    title: 'Article 1',
+                    content: 'Premier article du site',
+                    UserId: 1
+                })
+                    .then(() => console.log(`Le premier post a bien été créé.`))
+                    .catch(err => console.log(err));
+            }, 500)
+            setTimeout(() => {
+                Post.create({
+                    title: 'Article 2',
+                    content: 'Deuxième article du site',
+                    UserId: 1
+                })
+                    .then(() => console.log(`Le deuxième post a bien été créé.`))
+                    .catch(err => console.log(err));
+            }, 1500)
         })
         .catch(err => console.log(err))
 }

@@ -2,10 +2,12 @@ const { Post } = require('../sequelize').models;
 
 exports.addPost = (req, res, next) => {
     let post = {
+        title: req.body.title,
         content: req.body.content,
-        imgURL: req.body.imgURL,
+        imgURL: req.file ? req.file.filename : null,
         UserId: req.body.userId
     }
+    console.log(post);
 
     Post.create({ ...post })
         .then(() => res.status(201).json({ message: 'The post has been created.' }))
@@ -13,7 +15,9 @@ exports.addPost = (req, res, next) => {
 }
 
 exports.getAllPosts = (req, res, next) => {
-    Post.findAll()
+    Post.findAll({
+        order: [['createdAt', 'DESC']]
+    })
         .then(data => res.status(200).json({ data }))
         .catch(error => res.status(500).json({ error }));
 }

@@ -1,12 +1,14 @@
 const jwt = require('jsonwebtoken');
+const { User } = require('../sequelize').models;
 require('dotenv').config();
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
         const decodedToken = jwt.verify(token, process.env.JWT_KEY);
         const userId = decodedToken.userId;
-        if (userId === req.body.userId) {
+        let user = await User.findOne({ where: { id: userId } });
+        if (user) {
             next()
         } else {
             throw "Erreur d'authentification.";
