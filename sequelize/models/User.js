@@ -25,10 +25,17 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        profilePictureUrl: {
+            type: DataTypes.STRING,
+            defaultValue: 'defaultUser.jpg'
+        },
         isAdmin: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: 0
+        },
+        lastLogin: {
+            type: DataTypes.DATE
         }
     });
 }

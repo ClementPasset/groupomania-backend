@@ -8,8 +8,8 @@ const postCtrl = require('../controllers/post');
 
 router.post('/', auth, multer, postCtrl.addPost);
 router.delete('/:id', auth, authorOrAdmin, postCtrl.deletePost);
-router.get('/:id', auth, authorOrAdmin, postCtrl.getOnePost);
+router.get('/:id', auth, postCtrl.getOnePost);
 router.get('/', auth, postCtrl.getAllPosts);
-router.put('/:id', author, postCtrl.updatePost);
+router.put('/:id', auth, multer, author, postCtrl.updatePost);
 
 module.exports = router;

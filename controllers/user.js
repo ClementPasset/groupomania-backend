@@ -59,6 +59,8 @@ exports.signin = (req, res, next) => {
         where: { mail: mail }
     })
         .then(user => {
+            user.update({ lastLogin: Date.now() })
+                .catch(error => console.log(error));
             user = user.dataValues;
             bcrypt.compare(password, user.password)
                 .then(valid => {
@@ -114,7 +116,16 @@ exports.delete = async (req, res, next) => {
 
 exports.getAll = (req, res, next) => {
     User.findAll({
-        attributes: ['id', 'firstName', 'lastName', 'isAdmin']
+        attributes: ['id', 'firstName', 'lastName', 'isAdmin', 'profilePictureUrl']
+    })
+        .then(data => res.status(200).json({ data }))
+        .catch(error => res.status(500).json({ error }));
+}
+
+exports.getOne = (req, res, next) => {
+    User.findOne({
+        where: { id: req.params.id },
+        attributes: ['id', 'firstName', 'lastName', 'isAdmin', 'profilePictureUrl']
     })
         .then(data => res.status(200).json({ data }))
         .catch(error => res.status(500).json({ error }));
