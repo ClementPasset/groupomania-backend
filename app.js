@@ -18,6 +18,7 @@ app.use(helmet());
 app.use(express.json());
 
 app.use('/api/user/', userRoutes);
+app.use('/api/comment/', commentRoutes);
 app.use('/api/post/:postId/comment/', commentRoutes);
 app.use('/api/post/', postRoutes);
 

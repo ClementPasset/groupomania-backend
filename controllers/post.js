@@ -2,7 +2,6 @@ const { Post, User, Comment } = require('../sequelize').models;
 const fs = require('fs');
 
 exports.addPost = (req, res, next) => {
-    console.log('addPost');
     let post = {
         title: req.body.title,
         content: req.body.content,
@@ -16,9 +15,24 @@ exports.addPost = (req, res, next) => {
 }
 
 exports.getAllPosts = async (req, res, next) => {
-    console.log('getAllPosts');
     try {
         posts = await Post.findAll({
+            order: [['createdAt', 'DESC']],
+            include: [
+                { model: User, attributes: ['firstName', 'lastName'] },
+                { model: Comment, attributes: ['id'] }
+            ]
+        })
+        res.status(200).json({ posts })
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+
+}
+exports.getUserPosts = async (req, res, next) => {
+    try {
+        posts = await Post.findAll({
+            where: { UserId: req.params.userId },
             order: [['createdAt', 'DESC']],
             include: [
                 { model: User, attributes: ['firstName', 'lastName'] },
@@ -32,9 +46,8 @@ exports.getAllPosts = async (req, res, next) => {
 }
 
 exports.getOnePost = (req, res, next) => {
-    console.log('getOnePost');
     Post.findOne({
-        where: { id: req.params.id },
+        where: { id: req.params.postId },
         include: [
             { model: Comment, include: { model: User }, order: [['createdAt', 'ASC']] },
             { model: User }
@@ -45,9 +58,8 @@ exports.getOnePost = (req, res, next) => {
 }
 
 exports.deletePost = async (req, res, next) => {
-    console.log('deletePost');
     try {
-        let post = await Post.findOne({ where: { id: req.params.id } });
+        let post = await Post.findOne({ where: { id: req.params.postId } });
         let image = post.dataValues.imgURL;
         fs.unlink(`images/${image}`, () => {
             post.destroy()
@@ -60,8 +72,7 @@ exports.deletePost = async (req, res, next) => {
     }
 }
 
-exports.updatePost = (req, res, next) => {
-    console.log('updatePost');
+exports.updatePost = async (req, res, next) => {
     let post = { ...req.body };
     if (req.file) {
         post = {
@@ -69,21 +80,23 @@ exports.updatePost = (req, res, next) => {
             imgURL: req.file.filename
         }
     }
+    try {
+        let oldPost = await Post.findOne({ where: { id: post.id } })
+            .then(data => data.dataValues);
 
-    Post.findOne({ where: { id: post.id } })
-        .then(data => {
-            let postImg = data.dataValues.imgURL;
-            fs.unlink(`images/${postImg}`);
-        })
-        .catch(error => res.status(404).json({ error }));
+        if (oldPost.imgURL && req.file) {
+            fs.unlink(`images/${oldPost.imgURL}`, () => console.log('Image supprimée'));
+        }
 
-    Post.update({ ...post }, { where: { id: req.params.id } })
-        .then(data => {
-            if (data[0] > 0) {
-                res.status(200).json({ message: 'The post has been updated.' })
-            } else {
-                res.status(400).json({ message: 'The post has not been found.' })
-            }
-        })
-        .catch(error => res.status(500).json({ error }));
+        Post.update({ ...post }, { where: { id: req.params.postId } })
+            .then(data => {
+                if (data[0] > 0) {
+                    res.status(200).json({ message: 'The post has been updated.' })
+                } else {
+                    res.status(400).json({ message: 'The post has not been found.' })
+                }
+            })
+    } catch (error) {
+        res.status(501).json({ error });
+    }
 }

@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes, Sequelize, NOW } = require('sequelize');
 
 module.exports = (sequelize) => {
     sequelize.define('User', {
@@ -35,7 +35,8 @@ module.exports = (sequelize) => {
             defaultValue: 0
         },
         lastLogin: {
-            type: DataTypes.DATE
+            type: DataTypes.DATE,
+            defaultValue: Sequelize.fn('now')
         }
     });
 }

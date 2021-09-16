@@ -11,6 +11,11 @@ module.exports = (sequelize) => {
         content: {
             type: DataTypes.TEXT,
             allowNull: false
+        },
+        reported: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            default: false
         }
     });
 }

@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto-js');
 const jwt = require('jsonwebtoken');
 const passwordValidator = require('password-validator');
+const fs = require('fs');
 require('dotenv').config();
 
 exports.signup = (req, res, next) => {
@@ -67,11 +68,6 @@ exports.signin = (req, res, next) => {
                     if (!valid) {
                         return res.status(401).json({ message: "Authentication error" });
                     }
-                    console.log('Bearer ' + jwt.sign(
-                        { userId: user.id },
-                        process.env.JWT_KEY,
-                        { expiresIn: '24h' }
-                    ))
                     let expirationDate = new Date();
                     expirationDate.setDate(expirationDate.getDate() + 1);
                     res.status(200).json({
@@ -91,32 +87,36 @@ exports.signin = (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
-
     const initiatorId = req.body.userId;
-    const idToDelete = req.params.id;
+    const idToDelete = req.params.userId;
 
     let initiatorIsAdmin = await User.findOne({ where: { id: initiatorId } })
         .then(initiator => initiator.isAdmin)
         .catch(error => res.status(500).json({ error }));
 
-    if (initiatorIsAdmin || initiatorId === idToDelete) {
+    if (initiatorIsAdmin || parseInt(initiatorId) === parseInt(idToDelete)) {
         User.findOne({
             where: { id: idToDelete }
         })
             .then(user => {
+                profilePicture = user.dataValues.profilePictureUrl;
+                if (profilePicture !== "defaultUser.jpg") {
+                    fs.unlink(`images/${profilePicture}`, () => console.log('Photo de profil supprimée.'));
+                }
                 user.destroy()
                     .then(() => res.status(200).json({ message: "The user has been deleted." }))
                     .catch(error => res.status(500).json({ error }));
             })
             .catch(error => res.status(500).json({ error }));
     } else {
-        res.status(500).json({ message: "The use has not been deleted." })
+        res.status(500).json({ message: "The user has not been deleted." })
     }
 };
 
 exports.getAll = (req, res, next) => {
     User.findAll({
-        attributes: ['id', 'firstName', 'lastName', 'isAdmin', 'profilePictureUrl']
+        attributes: ['id', 'firstName', 'lastName', 'isAdmin', 'profilePictureUrl', 'lastLogin'],
+        order: [['lastLogin', 'ASC']]
     })
         .then(data => res.status(200).json({ data }))
         .catch(error => res.status(500).json({ error }));
@@ -124,9 +124,29 @@ exports.getAll = (req, res, next) => {
 
 exports.getOne = (req, res, next) => {
     User.findOne({
-        where: { id: req.params.id },
+        where: { id: req.params.userId },
         attributes: ['id', 'firstName', 'lastName', 'isAdmin', 'profilePictureUrl']
     })
         .then(data => res.status(200).json({ data }))
         .catch(error => res.status(500).json({ error }));
+}
+
+exports.update = async (req, res, next) => {
+    const userId = req.body.userId;
+    try {
+        let oldImage = await User.findOne({ where: { id: userId } })
+            .then(data => data.dataValues.profilePictureUrl);
+
+        if (oldImage !== 'defaultUser.jpg') {
+            fs.unlink(`images/${oldImage}`, () => {
+                User.update({ profilePictureUrl: req.file.filename }, { where: { id: userId } });
+            })
+        } else {
+            User.update({ profilePictureUrl: req.file.filename }, { where: { id: userId } });
+        }
+
+        res.status(200).json({ message: 'Photo de profil mise à jour' })
+    } catch (error) {
+        res.status(500).json({ error })
+    }
 }

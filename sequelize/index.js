@@ -41,7 +41,8 @@ if (process.env.NODE_ENV === 'dev') {
                 firstName: "John",
                 lastName: "DOE",
                 mail: "6Rki5nNPulD8WPITmmq/yA==",
-                password: "$2b$10$ujOZKEyPiFb.jv8XPbJyb.IZqdQyFfmAwgglfEBShNgmtJCYbfKVu"
+                password: "$2b$10$ujOZKEyPiFb.jv8XPbJyb.IZqdQyFfmAwgglfEBShNgmtJCYbfKVu",
+                lastLogin: '2021-07-13 05:48:22	'
             })
                 .then(user => console.log(`L'utilisateur ${user.dataValues.firstName} ${user.dataValues.lastName} a bien été créé.`))
                 .catch(err => console.log(err));
@@ -51,8 +52,8 @@ if (process.env.NODE_ENV === 'dev') {
                     Post.create({
                         id: 1,
                         title: 'Article 1',
-                        content: 'Premier article du site, sans image.',
-                        UserId: 1,
+                        content: 'Pie cotton candy candy canes candy tart candy canes icing. Tootsie roll candy canes tart pastry topping marshmallow sugar plum sweet roll muffin. Cheesecake oat cake donut icing bonbon.',
+                        UserId: 2,
                         createdAt: '2021-08-30 09:00:00'
                     })
                     Post.create({
@@ -65,8 +66,9 @@ if (process.env.NODE_ENV === 'dev') {
                     })
                     Comment.create({
                         id: 1,
-                        content: "Premier commentaire, court.",
+                        content: "Pie cotton candy candy canes candy tart candy canes icing. Tootsie roll candy canes tart pastry topping marshmallow sugar plum sweet roll muffin. Cheesecake oat cake donut icing bonbon.",
                         createdAt: '2021-09-02 09:00:00',
+                        reported: false,
                         PostId: 2,
                         UserId: 2
                     })
@@ -74,8 +76,17 @@ if (process.env.NODE_ENV === 'dev') {
                         id: 2,
                         content: "Tootsie roll sweet candy canes chocolate jujubes icing. Lollipop sugar plum tiramisu tiramisu bonbon jelly beans cookie. Gingerbread tootsie roll gummi bears chupa chups liquorice. Soufflé bonbon cotton candy jelly beans brownie dragée marshmallow.\nCheesecake apple pie brownie lollipop pie. Chocolate bar chocolate bar lemon drops candy jelly-o pudding cupcake pudding pastry. Toffee apple pie pie tiramisu cupcake sugar plum liquorice pastry.\nPie biscuit brownie sugar plum candy biscuit chocolate cake cookie. Danish tiramisu chocolate bar lemon drops carrot cake gummies bear claw. Jelly-o lollipop brownie jelly-o dessert icing cotton candy. Sugar plum jelly gummi bears soufflé shortbread donut.",
                         createdAt: '2021-09-03 09:00:00',
+                        reported: false,
                         PostId: 2,
                         UserId: 1
+                    })
+                    Comment.create({
+                        id: 3,
+                        content: "Commentaire signalé ... Pie cotton candy candy canes candy tart candy canes icing. Tootsie roll candy canes tart pastry topping marshmallow sugar plum sweet roll muffin. Cheesecake oat cake donut icing bonbon.",
+                        createdAt: '2021-09-02 09:00:00',
+                        reported: true,
+                        PostId: 1,
+                        UserId: 2
                     })
                 }
                 catch (err) {

@@ -1,11 +1,12 @@
 const router = require('express').Router({ mergeParams: true });
 const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
+const authorOrAdmin = require('../middleware/authorOrAdmin');
 
 const commentCtrl = require('../controllers/comment');
 
 router.post('/', auth, commentCtrl.addComment);
-router.get('/', auth, commentCtrl.getComments);
-router.delete('/:id', auth, admin, commentCtrl.deleteComment);
+router.get('/reported', auth, commentCtrl.getReported);
+router.put('/:commentId/report', auth, commentCtrl.report);
+router.delete('/:commentId', auth, authorOrAdmin, commentCtrl.deleteComment);
 
 module.exports = router;

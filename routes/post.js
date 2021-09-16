@@ -7,9 +7,10 @@ const multer = require('../middleware/multer-config');
 const postCtrl = require('../controllers/post');
 
 router.post('/', auth, multer, postCtrl.addPost);
-router.delete('/:id', auth, authorOrAdmin, postCtrl.deletePost);
-router.get('/:id', auth, postCtrl.getOnePost);
+router.delete('/:postId', auth, authorOrAdmin, postCtrl.deletePost);
+router.get('/:postId', auth, postCtrl.getOnePost);
 router.get('/', auth, postCtrl.getAllPosts);
-router.put('/:id', auth, multer, author, postCtrl.updatePost);
+router.get('/user/:userId', auth, postCtrl.getUserPosts);
+router.put('/:postId', auth, multer, author, postCtrl.updatePost);
 
 module.exports = router;
